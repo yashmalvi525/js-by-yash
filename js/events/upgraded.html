@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 400px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>GitHub User Fetcher</h1>
+    <input type="text" id="username" placeholder="Enter GitHub username" />
+    <button id="fetchButton">Fetch User Data</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        function fetchGitHubUserData(username) {
+            const url = `https://api.github.com/users/${username}`;
+            const xhr = new XMLHttpRequest();
+
+            xhr.open("GET", url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) { // Request is complete
+                    const resultDiv = document.getElementById("result");
+                    const data = JSON.parse(xhr.responseText);
+                    
+                    // Clear previous results
+                    resultDiv.innerHTML = "";
+
+                    // Display user info
+                    if (xhr.status === 200) { // User found
+                        let userInfo = "";
+                        userInfo += `Name: ${data.name || 'N/A'}<br>`;
+                        userInfo += `ID: ${data.id || 'N/A'}<br>`;
+                        userInfo += `Followers: ${data.followers !== undefined ? data.followers : 'N/A'}<br>`;
+                        userInfo += `Bio: ${data.bio || 'N/A'}<br>`;
+                        userInfo += `Location: ${data.location || 'N/A'}<br>`;
+                        userInfo += `Blog: ${data.blog ? `<a href="${data.blog}" target="_blank">${data.blog}</a>` : 'N/A'}<br>`;
+                        userInfo += `Avatar: <img src="${data.avatar_url}" alt="Avatar"><br>`;
+
+                        // Display user info
+                        resultDiv.innerHTML = userInfo;
+                    } else {
+                        // User not found or another error
+                        resultDiv.innerHTML = "User not found or an error occurred.";
+                    }
+                }
+            };
+
+            xhr.send();
+        }
+
+        document.getElementById("fetchButton").addEventListener("click", function() {
+            const username = document.getElementById("username").value.trim();
+            if (username) {
+                fetchGitHubUserData(username);
+            } else {
+                document.getElementById("result").innerHTML = "Please enter a username.";
+            }
+        });
+    </script>
+</body>
+</html>
